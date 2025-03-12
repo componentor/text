@@ -157,7 +157,7 @@
 		},
 		data: () => ({
 			hover: false,
-			screenWidth: 0,
+			screenWidth: 1280,
 			colorSchemeMediaQuery: null,
 			darkmode: false
 		}),
