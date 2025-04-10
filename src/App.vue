@@ -1,6 +1,6 @@
 <template>
 	<component
-		:is="styleOptions?.type || 'h1'"
+		:is="styleOptions?.type || 'p'"
 		:style="style"
 		@pointerover="hover=true"
 		@pointerleave="hover=false"
