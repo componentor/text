@@ -175,7 +175,7 @@
 		},
 		data: () => ({
 			hover: false,
-			windowWidth: 1280,
+			windowWidth: typeof global !== 'undefined' ? global?.windowWidth || 1280 : 1280,
 			colorSchemeMediaQuery: null,
 			darkmode: false
 		}),
