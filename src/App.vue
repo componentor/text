@@ -175,12 +175,18 @@
 		},
 		data: () => ({
 			hover: false,
-			screenWidth: 1024,
+			windowWidth: typeof window !== 'undefined' ? window.innerWidth : typeof global !== 'undefined' ? global.windowWidth : 1280,
 			colorSchemeMediaQuery: null,
 			darkmode: false
 		}),
+		created() {
+			if (typeof window !== 'undefined') {
+				this.windowWidth = window.innerWidth;
+				document.cookie = `windowWidth=${window.innerWidth}; path=/; max-age=3600; SameSite=None`;
+			}
+		},
 		mounted() {
-			this.screenWidth = window.innerWidth;
+			this.windowWidth = window.innerWidth;
 			this.colorSchemeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 			this.darkmode = window.matchMedia('(prefers-color-scheme: dark)')
 				.matches;
@@ -196,7 +202,7 @@
 				this.darkmode = event.matches;
 			},
 			handleResize() {
-				this.screenWidth = window.innerWidth;
+				this.windowWidth = window.innerWidth;
 			}
 		},
 		computed: {
@@ -206,11 +212,11 @@
 			},
 			bpoint() {
 				if (this.breakpoint) return this.breakpoint;
-				if (this.screenWidth > 1280) return '2xl';
-				if (this.screenWidth > 1024) return 'xl';
-				if (this.screenWidth > 768) return 'lg';
-				if (this.screenWidth > 640) return 'md';
-				if (this.screenWidth > 480) return 'sm';
+				if (this.windowWidth > 1280) return '2xl';
+				if (this.windowWidth > 1024) return 'xl';
+				if (this.windowWidth > 768) return 'lg';
+				if (this.windowWidth > 640) return 'md';
+				if (this.windowWidth > 480) return 'sm';
 				return 'xs';
 			},
 			group() {
