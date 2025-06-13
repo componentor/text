@@ -175,18 +175,13 @@
 		},
 		data: () => ({
 			hover: false,
-			windowWidth: typeof window !== 'undefined' ? window.innerWidth : typeof global !== 'undefined' ? global.windowWidth : 1280,
+			windowWidth: typeof window !== 'undefined' ? window.innerWidth : typeof global !== 'undefined' ? global.windowWidth || 1280 : 1280,
 			colorSchemeMediaQuery: null,
 			darkmode: false
 		}),
-		created() {
-			if (typeof window !== 'undefined') {
-				this.windowWidth = window.innerWidth;
-				document.cookie = `windowWidth=${window.innerWidth}; path=/; max-age=3600; SameSite=None`;
-			}
-		},
 		mounted() {
 			this.windowWidth = window.innerWidth;
+			document.cookie = `windowWidth=${window.innerWidth}; path=/; max-age=3600; SameSite=None`;
 			this.colorSchemeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 			this.darkmode = window.matchMedia('(prefers-color-scheme: dark)')
 				.matches;
