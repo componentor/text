@@ -181,7 +181,7 @@
 		}),
 		mounted() {
 			this.windowWidth = window.innerWidth;
-			document.cookie = `windowWidth=${window.innerWidth}; path=/; max-age=3600; Secure; SameSite=None`;
+			document.cookie = `windowWidth=${window.innerWidth}; path=/; Secure; SameSite=None`;
 			this.colorSchemeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 			this.darkmode = window.matchMedia('(prefers-color-scheme: dark)')
 				.matches;
