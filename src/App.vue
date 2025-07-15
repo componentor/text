@@ -223,7 +223,7 @@
 				const props = ['type', 'fontSize', 'fontWeight', 'lineHeight', 'color', 'backgroundColor', 'backgroundImage', 'padding', 'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft', 'margin', 'marginTop', 'marginRight', 'marginBottom', 'marginLeft'];
 				const groups = ['default', 'hover'];
 				const breakpoints = ['xs', 'sm', 'md', 'lg', 'xl', '2xl'];
-				const themes = ['light', 'dark'];
+				const themes = [this.themeComputed, ...['light', 'dark'].filter(t => t !== this.themeComputed)];
 				for (const prop of props) {
 					let priority = {};
 					if (this[prop]) {
@@ -246,35 +246,36 @@
 					}
 					const groups = Object.keys(merge);
 					if (groups.length) {
-						style[prop] = merge?.['default']?.['xs']?.['light'];
-						let limitReached = false;
+						for (const theme of themes) {
+							style[prop] = merge?.['default']?.['xs']?.[theme];
+							if (typeof style[prop] !== 'undefined' && style[prop] !== null && style[prop] !== '') {
+								break;
+							}
+						}
 						let limit = this.bpoint || 'xs';
 						let match = false;
 						for (const breakpoint of breakpoints) {
-							if (!limitReached) {
-								const firstPriority = merge?.[this.group]?.[breakpoint]?.[this.themeComputed]?.toString();
-								const secondPriority = merge?.[this.group]?.[breakpoint]?.['light']?.toString();
-								const value = firstPriority || secondPriority;
-								if (value) {
-									style[prop] = value;
+							for (const theme of themes) {
+								let value = merge?.[this.group]?.[breakpoint]?.[theme]?.toString();
+								if (typeof value !== 'undefined' && value !== null && value !== '') {
 									match = true;
+									style[prop] = value;
+									break;
 								}
-								limitReached = breakpoint === limit;
 							}
+							if (breakpoint === limit) break;
 						}
 						if (!match && this.group !== 'default') {
-							limitReached = false;
 							limit = this.bpoint || 'xs';
 							for (const breakpoint of breakpoints) {
-								if (!limitReached) {
-									const firstPriority = merge?.['default']?.[breakpoint]?.[this.themeComputed]?.toString();
-									const secondPriority = merge?.['default']?.[breakpoint]?.['light']?.toString();
-									const value = firstPriority || secondPriority;
-									if (value) {
+								for (const theme of themes) {
+									let value = merge?.['default']?.[breakpoint]?.[theme]?.toString();
+									if (typeof value !== 'undefined' && value !== null && value !== '') {
 										style[prop] = value;
+										break;
 									}
-									limitReached = breakpoint === limit;
 								}
+								if (breakpoint === limit) break;
 							}
 						}
 					}
