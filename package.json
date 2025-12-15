@@ -1,0 +1,20 @@
+{
+  "homepage": "https://vueplay.com",
+  "name": "@componentor/text",
+  "version": "2.0.0",
+  "type": "module",
+  "main": "src/App.vue",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "vue": "^3.5.25"
+  },
+  "devDependencies": {
+    "@rollup/plugin-data-uri": "^1.0.3",
+    "rollup-plugin-gzip": "^4.1.1",
+    "@vitejs/plugin-vue": "^6.0.3",
+    "vite": "^7.2.7"
+  }
+}
