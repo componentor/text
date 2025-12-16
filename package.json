@@ -1,7 +1,7 @@
 {
   "homepage": "https://vueplay.com",
   "name": "@componentor/text",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "type": "module",
   "main": "src/App.vue",
   "scripts": {
@@ -9,7 +9,7 @@
     "build": "vite build"
   },
   "dependencies": {
-    "@componentor/breakpoint": "^1.4.3",
+    "@componentor/breakpoint": "^1.4.4",
     "vue": "^3.5.25"
   },
   "devDependencies": {
