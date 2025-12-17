@@ -1,9 +1,16 @@
 <template>
 	<component
-		:is="styleOptions?.type || 'div'"
-		:style="style"
-		@pointerover="hover=true"
-		@pointerleave="hover=false"
+		:is="tag"
+		:style="computedStyle"
+		@pointerenter="isHover = true"
+		@pointerleave="isHover = false; isActive = false"
+		@pointerdown="isActive = true"
+		@pointerup="isActive = false"
+		@pointercancel="isActive = false"
+		@focus="isFocus = true"
+		@blur="isFocus = false"
+		@focusin="isFocusWithin = true"
+		@focusout="isFocusWithin = false"
 	>
 		<slot>
 			Text
@@ -11,286 +18,102 @@
 	</component>
 </template>
 <script>
+	import {
+		parse,
+		getStyle
+	} from '@componentor/adaptive';
 	export default {
 		wysiwyg: true,
-		inject: ['theme', 'breakpoint'],
-		props: {
-			type: {
-				type: String,
-				options: [{
-					key: 'div',
-					value: 'div'
-				}, {
-					key: 'span',
-					value: 'span'
-				}, {
-					key: 'p',
-					value: 'p'
-				}],
-				breakpoints: ['xs', 'sm', 'md', 'lg', 'xl', '2xl'],
-				themes: ['light', 'dark'],
-				groups: ['default', 'hover']
+		inject: {
+			theme: {
+				default: ''
 			},
-			fontSize: {
-				type: String,
-				default: '',
-				control: 'slider',
-				unit: 'px',
-				breakpoints: ['xs', 'sm', 'md', 'lg', 'xl', '2xl'],
-				themes: ['light', 'dark'],
-				groups: ['default', 'hover']
-			},
-			fontWeight: {
-				type: String,
-				default: '',
-				control: 'slider',
-				unit: '',
-				breakpoints: ['xs', 'sm', 'md', 'lg', 'xl', '2xl'],
-				themes: ['light', 'dark'],
-				groups: ['default', 'hover']
-			},
-			lineHeight: {
-				type: String,
-				default: '',
-				control: 'slider',
-				unit: 'px',
-				breakpoints: ['xs', 'sm', 'md', 'lg', 'xl', '2xl'],
-				themes: ['light', 'dark'],
-				groups: ['default', 'hover']
-			},
-			color: {
-				type: String,
-				default: '',
-				control: 'color',
-				breakpoints: ['xs', 'sm', 'md', 'lg', 'xl', '2xl'],
-				themes: ['light', 'dark'],
-				groups: ['default', 'hover']
-			},
-			backgroundColor: {
-				type: String,
-				default: '',
-				control: 'color',
-				breakpoints: ['xs', 'sm', 'md', 'lg', 'xl', '2xl'],
-				themes: ['light', 'dark'],
-				groups: ['default', 'hover']
-			},
-			backgroundImage: {
-				type: String,
-				default: '',
-				control: 'media',
-				breakpoints: ['xs', 'sm', 'md', 'lg', 'xl', '2xl'],
-				themes: ['light', 'dark'],
-				groups: ['default', 'hover']
-			},
-			padding: {
-				type: String,
-				default: '',
-				control: 'slider',
-				unit: 'px',
-				breakpoints: ['xs', 'sm', 'md', 'lg', 'xl', '2xl'],
-				themes: ['light', 'dark'],
-				groups: ['default', 'hover']
-			},
-			paddingTop: {
-				type: String,
-				default: '',
-				control: 'slider',
-				unit: 'px',
-				breakpoints: ['xs', 'sm', 'md', 'lg', 'xl', '2xl'],
-				themes: ['light', 'dark'],
-				groups: ['default', 'hover']
-			},
-			paddingRight: {
-				type: String,
-				default: '',
-				control: 'slider',
-				unit: 'px',
-				breakpoints: ['xs', 'sm', 'md', 'lg', 'xl', '2xl'],
-				themes: ['light', 'dark'],
-				groups: ['default', 'hover']
-			},
-			paddingBottom: {
-				type: String,
-				default: '',
-				control: 'slider',
-				unit: 'px',
-				breakpoints: ['xs', 'sm', 'md', 'lg', 'xl', '2xl'],
-				themes: ['light', 'dark'],
-				groups: ['default', 'hover']
-			},
-			paddingLeft: {
-				type: String,
-				default: '',
-				control: 'slider',
-				unit: 'px',
-				breakpoints: ['xs', 'sm', 'md', 'lg', 'xl', '2xl'],
-				themes: ['light', 'dark'],
-				groups: ['default', 'hover']
-			},
-			margin: {
-				type: String,
-				default: '',
-				control: 'slider',
-				unit: 'px',
-				breakpoints: ['xs', 'sm', 'md', 'lg', 'xl', '2xl'],
-				themes: ['light', 'dark'],
-				groups: ['default', 'hover']
-			},
-			marginTop: {
-				type: String,
-				default: '',
-				control: 'slider',
-				unit: 'px',
-				breakpoints: ['xs', 'sm', 'md', 'lg', 'xl', '2xl'],
-				themes: ['light', 'dark'],
-				groups: ['default', 'hover']
-			},
-			marginRight: {
-				type: String,
-				default: '',
-				control: 'slider',
-				unit: 'px',
-				breakpoints: ['xs', 'sm', 'md', 'lg', 'xl', '2xl'],
-				themes: ['light', 'dark'],
-				groups: ['default', 'hover']
-			},
-			marginBottom: {
-				type: String,
-				default: '',
-				control: 'slider',
-				unit: 'px',
-				breakpoints: ['xs', 'sm', 'md', 'lg', 'xl', '2xl'],
-				themes: ['light', 'dark'],
-				groups: ['default', 'hover']
-			},
-			marginLeft: {
-				type: String,
-				default: '',
-				control: 'slider',
-				unit: 'px',
-				breakpoints: ['xs', 'sm', 'md', 'lg', 'xl', '2xl'],
-				themes: ['light', 'dark'],
-				groups: ['default', 'hover']
+			breakpoint: {
+				default: ''
 			}
 		},
-		data: () => ({
-			hover: false,
-			windowWidth: typeof global !== 'undefined' ? global?.windowWidth || 1280 : 1280,
-			colorSchemeMediaQuery: null,
-			darkmode: false
-		}),
-		mounted() {
-			this.windowWidth = window.innerWidth;
-			document.cookie = `windowWidth=${window.innerWidth}; path=/; Secure; SameSite=None`;
-			this.colorSchemeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-			this.darkmode = window.matchMedia('(prefers-color-scheme: dark)')
-				.matches;
-			this.colorSchemeMediaQuery.addEventListener('change', this.handleColorSchemeChange);
-			window.addEventListener('resize', this.handleResize);
+		data() {
+			return {
+				isHover: false,
+				isActive: false,
+				isFocus: false,
+				isFocusWithin: false
+			};
 		},
-		beforeUnmount() {
-			this.colorSchemeMediaQuery.removeEventListener('change', this.handleColorSchemeChange);
-			window.removeEventListener('resize', this.handleResize);
-		},
-		methods: {
-			handleColorSchemeChange(event) {
-				this.darkmode = event.matches;
+		props: {
+			tag: {
+				type: String,
+				default: 'span'
 			},
-			handleResize() {
-				this.windowWidth = window.innerWidth;
+			adapt: {
+				type: [String, Object, Array],
+				default: ''
+			},
+			state: {
+				type: [String, Array],
+				default: ''
+			},
+			disabled: {
+				type: Boolean,
+				default: false
+			},
+			themeName: {
+				type: String,
+				default: ''
+			},
+			breakpointName: {
+				type: String,
+				default: ''
+			},
+			breakpointStrategy: {
+				type: String,
+				default: 'mobile-first',
+				validator: v => ['exact', 'mobile-first', 'desktop-first'].includes(v)
+			},
+			themeStrategy: {
+				type: String,
+				default: 'fallback',
+				validator: v => ['strict', 'fallback'].includes(v)
 			}
 		},
 		computed: {
-			themeComputed() {
-				if (this.theme) return this.theme;
-				return this.darkmode ? 'dark' : 'light';
-			},
-			bpoint() {
-				if (this.breakpoint) return this.breakpoint;
-				if (this.windowWidth < 640) return 'xs';
-				if (this.windowWidth < 768) return 'sm';
-				if (this.windowWidth < 1024) return 'md';
-				if (this.windowWidth < 1280) return 'lg';
-				if (this.windowWidth < 1536) return 'xl';
-				return '2xl';
-			},
-			group() {
-				if (this.hover) return 'hover';
-				return 'default';
-			},
-			styleOptions() {
-				const style = {};
-				const props = ['type', 'fontSize', 'fontWeight', 'lineHeight', 'color', 'backgroundColor', 'backgroundImage', 'padding', 'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft', 'margin', 'marginTop', 'marginRight', 'marginBottom', 'marginLeft'];
-				const groups = ['default', 'hover'];
-				const breakpoints = ['xs', 'sm', 'md', 'lg', 'xl', '2xl'];
-				const themes = [this.themeComputed, ...['light', 'dark'].filter(t => t !== this.themeComputed)];
-				for (const prop of props) {
-					let priority = {};
-					if (this[prop]) {
-						try {
-							priority = JSON.parse(this[prop].replaceAll('`', '"'));
-						} catch (e) {}
-					}
-					const merge = {};
-					for (const group of Object.keys(priority)) {
-						const pri = priority?.[group] || {};
-						merge[group] = {};
-						for (const breakpoint of Object.keys(pri)) {
-							const p = pri?.[breakpoint] || {};
-							merge[group][breakpoint] = {};
-							for (const theme of Object.keys(p)) {
-								const value = p?.[theme]?.toString() || null;
-								merge[group][breakpoint][theme] = value;
-							}
-						}
-					}
-					const groups = Object.keys(merge);
-					if (groups.length) {
-						for (const theme of themes) {
-							style[prop] = merge?.['default']?.['xs']?.[theme];
-							if (typeof style[prop] !== 'undefined' && style[prop] !== null && style[prop] !== '') {
-								break;
-							}
-						}
-						let limit = this.bpoint || 'xs';
-						let match = false;
-						for (const breakpoint of breakpoints) {
-							for (const theme of themes) {
-								let value = merge?.[this.group]?.[breakpoint]?.[theme]?.toString();
-								if (typeof value !== 'undefined' && value !== null && value !== '') {
-									match = true;
-									style[prop] = value;
-									break;
-								}
-							}
-							if (breakpoint === limit) break;
-						}
-						if (!match && this.group !== 'default') {
-							limit = this.bpoint || 'xs';
-							for (const breakpoint of breakpoints) {
-								for (const theme of themes) {
-									let value = merge?.['default']?.[breakpoint]?.[theme]?.toString();
-									if (typeof value !== 'undefined' && value !== null && value !== '') {
-										style[prop] = value;
-										break;
-									}
-								}
-								if (breakpoint === limit) break;
-							}
-						}
-					}
+			adaptString() {
+				if (!this.adapt) return '';
+				if (typeof this.adapt === 'string') return this.adapt;
+				if (Array.isArray(this.adapt)) {
+					return this.adapt.map(item => {
+							if (typeof item === 'string') return item;
+							return Object.entries(item)
+								.map(([key, value]) => `${key}:${value}`)
+								.join('; ');
+						})
+						.join('; ');
 				}
-				return style;
+				return Object.entries(this.adapt)
+					.map(([key, value]) => `${key}:${value}`)
+					.join('; ');
 			},
-			style() {
-				const ignore = ['type'];
-				const obj = {};
-				const keys = Object.keys(this.styleOptions)
-					.filter(key => !ignore.includes(key));
-				for (const key of keys) {
-					obj[key] = this.styleOptions[key];
-				}
-				return obj;
+			stateArray() {
+				const native = [];
+				if (this.isHover) native.push('hover');
+				if (this.isActive) native.push('active');
+				if (this.isFocus) native.push('focus');
+				if (this.isFocusWithin) native.push('focus-within');
+				if (this.disabled) native.push('disabled');
+				if (!this.state) return native;
+				const custom = Array.isArray(this.state) ? this.state : this.state.split(':');
+				return [...native, ...custom];
+			},
+			computedStyle() {
+				if (!this.adaptString) return '';
+				const parsed = parse(this.adaptString);
+				return getStyle(parsed, {
+					theme: this.themeName || this.theme,
+					breakpoint: this.breakpointName || this.breakpoint,
+					states: this.stateArray,
+					breakpointStrategy: this.breakpointStrategy,
+					themeStrategy: this.themeStrategy
+				});
 			}
 		}
 	};

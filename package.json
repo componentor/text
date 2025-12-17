@@ -1,7 +1,7 @@
 {
   "homepage": "https://vueplay.com",
-  "name": "@vueplayground/demo",
-  "version": "1.0.0",
+  "name": "@componentor/text",
+  "version": "2.1.2",
   "type": "module",
   "main": "src/App.vue",
   "scripts": {
@@ -9,15 +9,12 @@
     "build": "vite build"
   },
   "dependencies": {
+    "@componentor/adaptive": "^1.5.2",
     "vue": "^3.5.25"
   },
   "devDependencies": {
     "@rollup/plugin-data-uri": "^1.0.3",
-    "@vitejs/plugin-vue": "^5.2.1",
-    "rollup-plugin-gzip": "^3.1.1",
-    "vite": "^6.0.7",
-    "tailwindcss": "^3.4.16",
-    "autoprefixer": "^10.4.17",
-    "postcss": "^8.4.35"
+    "@vitejs/plugin-vue": "^6.0.3",
+    "vite": "^7.2.7"
   }
 }
