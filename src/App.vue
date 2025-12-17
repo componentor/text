@@ -21,7 +21,7 @@
 	import {
 		parse,
 		getStyle
-	} from '@componentor/breakpoint';
+	} from '@componentor/adaptive';
 	export default {
 		wysiwyg: true,
 		inject: {
@@ -45,7 +45,7 @@
 				type: String,
 				default: 'span'
 			},
-			cstyle: {
+			adapt: {
 				type: [String, Object, Array],
 				default: ''
 			},
@@ -77,11 +77,11 @@
 			}
 		},
 		computed: {
-			cstyleString() {
-				if (!this.cstyle) return '';
-				if (typeof this.cstyle === 'string') return this.cstyle;
-				if (Array.isArray(this.cstyle)) {
-					return this.cstyle.map(item => {
+			adaptString() {
+				if (!this.adapt) return '';
+				if (typeof this.adapt === 'string') return this.adapt;
+				if (Array.isArray(this.adapt)) {
+					return this.adapt.map(item => {
 							if (typeof item === 'string') return item;
 							return Object.entries(item)
 								.map(([key, value]) => `${key}:${value}`)
@@ -89,7 +89,7 @@
 						})
 						.join('; ');
 				}
-				return Object.entries(this.cstyle)
+				return Object.entries(this.adapt)
 					.map(([key, value]) => `${key}:${value}`)
 					.join('; ');
 			},
@@ -105,8 +105,8 @@
 				return [...native, ...custom];
 			},
 			computedStyle() {
-				if (!this.cstyleString) return '';
-				const parsed = parse(this.cstyleString);
+				if (!this.adaptString) return '';
+				const parsed = parse(this.adaptString);
 				return getStyle(parsed, {
 					theme: this.themeName || this.theme,
 					breakpoint: this.breakpointName || this.breakpoint,
